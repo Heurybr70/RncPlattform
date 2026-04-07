@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/RncPlatform.Api/RncPlatform.Api.csproj" />
+    <Project Path="src/RncPlatform.Application/RncPlatform.Application.csproj" />
+    <Project Path="src/RncPlatform.Contracts/RncPlatform.Contracts.csproj" />
+    <Project Path="src/RncPlatform.Domain/RncPlatform.Domain.csproj" />
+    <Project Path="src/RncPlatform.Infrastructure/RncPlatform.Infrastructure.csproj" />
+  </Folder>
+</Solution>

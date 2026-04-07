@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "RncPlatform.Domain/1.0.0": {
+        "runtime": {
+          "RncPlatform.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "RncPlatform.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

@@ -1,0 +1,17 @@
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\bin\Debug\net10.0\RncPlatform.Application.deps.json
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\bin\Debug\net10.0\RncPlatform.Application.dll
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\bin\Debug\net10.0\RncPlatform.Application.pdb
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\bin\Debug\net10.0\RncPlatform.Contracts.dll
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\bin\Debug\net10.0\RncPlatform.Domain.dll
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\bin\Debug\net10.0\RncPlatform.Domain.pdb
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\bin\Debug\net10.0\RncPlatform.Contracts.pdb
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\obj\Debug\net10.0\RncPlatform.Application.csproj.AssemblyReference.cache
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\obj\Debug\net10.0\RncPlatform.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\obj\Debug\net10.0\RncPlatform.Application.AssemblyInfoInputs.cache
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\obj\Debug\net10.0\RncPlatform.Application.AssemblyInfo.cs
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\obj\Debug\net10.0\RncPlatform.Application.csproj.CoreCompileInputs.cache
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\obj\Debug\net10.0\RncPlatf.0A011180.Up2Date
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\obj\Debug\net10.0\RncPlatform.Application.dll
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\obj\Debug\net10.0\refint\RncPlatform.Application.dll
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\obj\Debug\net10.0\RncPlatform.Application.pdb
+C:\Users\Heury Bernal\.gemini\antigravity\scratch\RncPlatform\src\RncPlatform.Application\obj\Debug\net10.0\ref\RncPlatform.Application.dll
