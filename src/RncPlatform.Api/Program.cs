@@ -1,13 +1,16 @@
+using Serilog;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using RncPlatform.Application;
 using RncPlatform.Infrastructure;
-using Serilog;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Collections.Generic;
+using Microsoft.OpenApi.Models;
+using RncPlatform.Application.Abstractions.Identity;
+using RncPlatform.Api.Middlewares;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,28 +24,61 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 // Add services to the container.
 builder.Services.AddControllers();
 
+// JWT Authentication
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var jwtSettings = jwtSection.Get<JwtOptions>();
+
+if (jwtSettings == null || string.IsNullOrEmpty(jwtSettings.SecretKey))
+{
+    throw new InvalidOperationException("La sección 'Jwt' en appsettings.json es inválida o no contiene 'SecretKey'.");
+}
+
+builder.Services.Configure<JwtOptions>(jwtSection);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+    };
+});
+
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "RncPlatform API", Version = "v1" });
-    c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "RncPlatform API", Version = "v1" });
+    
+    // JWT Bearer Definition
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Description = "API Key Header. Escribe tu llave abajo. Ejemplo: 'v1_dgii_secret_token_123'",
-        Name = "x-api-key",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "ApiKeyScheme"
+        Description = "JWT Authorization header usando el esquema Bearer. Ejemplo: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
     });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecurityScheme
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "ApiKey" },
-                Scheme = "ApiKeyScheme",
-                Name = "ApiKey",
-                In = ParameterLocation.Header,
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference { Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme, Id = "Bearer" },
+                Scheme = "Bearer",
+                Name = "Bearer",
+                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
             },
             new List<string>()
         }
@@ -73,23 +109,28 @@ app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
-app.UseWhen(context => context.Request.Path.StartsWithSegments("/api"), appBuilder =>
-{
-    appBuilder.UseMiddleware<RncPlatform.Api.Middlewares.ApiKeyMiddleware>();
-});
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHealthChecks("/health/live", new HealthCheckOptions
+// Seed User (Permanente para asegurar existencia en pruebas)
+using (var scope = app.Services.CreateScope())
 {
-    Predicate = _ => false
-});
-
-app.MapHealthChecks("/health/ready", new HealthCheckOptions
-{
-    Predicate = check => check.Tags.Contains("ready")
-});
+    var userRepo = scope.ServiceProvider.GetRequiredService<RncPlatform.Application.Abstractions.Persistence.IUserRepository>();
+    var hasher = scope.ServiceProvider.GetRequiredService<RncPlatform.Application.Abstractions.Identity.IPasswordHasher>();
+    var existing = await userRepo.GetByUsernameAsync("admin");
+    if (existing == null)
+    {
+        await userRepo.AddAsync(new RncPlatform.Domain.Entities.User
+        {
+            Username = "admin",
+            PasswordHash = hasher.HashPassword("RncPlatformAdmin2024!"),
+            FullName = "Admin Principal",
+            Email = "admin@rncplatform.com"
+        });
+        Console.WriteLine(">>>> USUARIO ADMIN CREADO EXITOSAMENTE <<<<");
+    }
+}
 
 app.Run();

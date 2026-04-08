@@ -12,6 +12,7 @@ public class RncDbContext : DbContext
 
     public DbSet<Taxpayer> Taxpayers => Set<Taxpayer>();
     public DbSet<RncSnapshot> RncSnapshots => Set<RncSnapshot>();
+    public DbSet<User> Users => Set<User>();
     public DbSet<RncChangeLog> RncChangeLogs => Set<RncChangeLog>();
     public DbSet<SyncJobState> SyncJobStates => Set<SyncJobState>();
     public DbSet<RncStaging> RncStaging => Set<RncStaging>();

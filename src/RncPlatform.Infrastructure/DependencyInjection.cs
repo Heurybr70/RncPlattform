@@ -11,6 +11,8 @@ using RncPlatform.Infrastructure.External.Dgii;
 using RncPlatform.Infrastructure.Locking;
 using RncPlatform.Infrastructure.Persistence;
 using RncPlatform.Infrastructure.Persistence.Repositories;
+using RncPlatform.Application.Abstractions.Identity;
+using RncPlatform.Infrastructure.Identity;
 
 namespace RncPlatform.Infrastructure;
 
@@ -44,11 +46,14 @@ public static class DependencyInjection
         services.AddScoped<IRncChangeLogRepository, RncChangeLogRepository>();
         services.AddScoped<ISyncJobStateRepository, SyncJobStateRepository>();
         services.AddScoped<IRncStagingRepository, RncStagingRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         // Services
         services.AddScoped<IRncCacheService, RncCacheService>();
         services.AddScoped<IDistributedLockService, DistributedLockService>();
         services.AddScoped<IRncFileParser, RncFileParser>();
+        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+        services.AddScoped<IJwtProvider, JwtProvider>();
         
         services.AddHttpClient<IRncSourceDownloader, DgiiRncDownloader>();
 

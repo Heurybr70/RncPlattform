@@ -2,12 +2,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using RncPlatform.Application.Features.Rncs.Services;
 using RncPlatform.Contracts.Requests;
 using RncPlatform.Contracts.Responses;
 
 namespace RncPlatform.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
 public class RncsController : ControllerBase

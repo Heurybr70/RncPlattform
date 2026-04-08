@@ -8,9 +8,9 @@ using RncPlatform.Contracts.Responses;
 
 namespace RncPlatform.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
-// [Authorize(Roles = "RncAdmin")] // Future phase: auth
 public class AdminController : ControllerBase
 {
     private readonly IRncSyncService _syncService;
