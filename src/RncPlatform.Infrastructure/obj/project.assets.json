@@ -38,6 +38,15 @@
           }
         }
       },
+      "FastMember/1.5.0": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp2.0/FastMember.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.0/FastMember.dll": {}
+        }
+      },
       "FluentValidation/12.1.1": {
         "type": "package",
         "compile": {
@@ -683,6 +692,25 @@
           "buildTransitive/net8.0/_._": {}
         }
       },
+      "Microsoft.Extensions.Caching.StackExchangeRedis/10.0.5": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Abstractions": "10.0.5",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.5",
+          "Microsoft.Extensions.Options": "10.0.5",
+          "StackExchange.Redis": "2.7.27"
+        },
+        "compile": {
+          "lib/net10.0/Microsoft.Extensions.Caching.StackExchangeRedis.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/Microsoft.Extensions.Caching.StackExchangeRedis.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Configuration/10.0.5": {
         "type": "package",
         "dependencies": {
@@ -827,6 +855,48 @@
         },
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.Diagnostics.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.FileProviders.Abstractions/10.0.5": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "10.0.5"
+        },
+        "compile": {
+          "lib/net10.0/Microsoft.Extensions.FileProviders.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/Microsoft.Extensions.FileProviders.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.Hosting.Abstractions/10.0.5": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "10.0.5",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.5",
+          "Microsoft.Extensions.Diagnostics.Abstractions": "10.0.5",
+          "Microsoft.Extensions.FileProviders.Abstractions": "10.0.5",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.5"
+        },
+        "compile": {
+          "lib/net10.0/Microsoft.Extensions.Hosting.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/Microsoft.Extensions.Hosting.Abstractions.dll": {
             "related": ".xml"
           }
         },
@@ -1523,6 +1593,20 @@
         "lib/net8.0/Azure.Identity.xml",
         "lib/netstandard2.0/Azure.Identity.dll",
         "lib/netstandard2.0/Azure.Identity.xml"
+      ]
+    },
+    "FastMember/1.5.0": {
+      "sha512": "Db80coUbys8VgmcrR9mxUR+EInTpweoLM0GFJXIBuj8+PTgqV+ygq+EOM3HME83tob1+RR9XlBcEkpfFyypdHg==",
+      "type": "package",
+      "path": "fastmember/1.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "fastmember.1.5.0.nupkg.sha512",
+        "fastmember.nuspec",
+        "lib/net461/FastMember.dll",
+        "lib/netcoreapp2.0/FastMember.dll",
+        "lib/netstandard2.0/FastMember.dll"
       ]
     },
     "FluentValidation/12.1.1": {
@@ -2944,6 +3028,26 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "Microsoft.Extensions.Caching.StackExchangeRedis/10.0.5": {
+      "sha512": "zXb143/TpEKOLQuWGw2CkJgb9F4XXh2XbevMvppzsIHr1/pjML0zjc+vzXcpCV8YUwpW5NIaScZhzFSm621B3Q==",
+      "type": "package",
+      "path": "microsoft.extensions.caching.stackexchangeredis/10.0.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net10.0/Microsoft.Extensions.Caching.StackExchangeRedis.dll",
+        "lib/net10.0/Microsoft.Extensions.Caching.StackExchangeRedis.xml",
+        "lib/net462/Microsoft.Extensions.Caching.StackExchangeRedis.dll",
+        "lib/net462/Microsoft.Extensions.Caching.StackExchangeRedis.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.Caching.StackExchangeRedis.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Caching.StackExchangeRedis.xml",
+        "microsoft.extensions.caching.stackexchangeredis.10.0.5.nupkg.sha512",
+        "microsoft.extensions.caching.stackexchangeredis.nuspec"
+      ]
+    },
     "Microsoft.Extensions.Configuration/10.0.5": {
       "sha512": "8Rx5sqg04FttxrumyG6bmoRuFRgYzK6IVwF1i0/o0cXfKBdDeVpJejKHtJCMjyg9E/DNMVqpqOGe/tCT5gYvVA==",
       "type": "package",
@@ -3186,6 +3290,66 @@
         "lib/netstandard2.0/Microsoft.Extensions.Diagnostics.Abstractions.xml",
         "microsoft.extensions.diagnostics.abstractions.10.0.5.nupkg.sha512",
         "microsoft.extensions.diagnostics.abstractions.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "Microsoft.Extensions.FileProviders.Abstractions/10.0.5": {
+      "sha512": "nCBmCx0Xemlu65ZiWMcXbvfvtznKxf4/YYKF9R28QkqdI9lTikedGqzJ28/xmdGGsxUnsP5/3TQGpiPwVjK0dA==",
+      "type": "package",
+      "path": "microsoft.extensions.fileproviders.abstractions/10.0.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net461/Microsoft.Extensions.FileProviders.Abstractions.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/Microsoft.Extensions.FileProviders.Abstractions.targets",
+        "lib/net10.0/Microsoft.Extensions.FileProviders.Abstractions.dll",
+        "lib/net10.0/Microsoft.Extensions.FileProviders.Abstractions.xml",
+        "lib/net462/Microsoft.Extensions.FileProviders.Abstractions.dll",
+        "lib/net462/Microsoft.Extensions.FileProviders.Abstractions.xml",
+        "lib/net8.0/Microsoft.Extensions.FileProviders.Abstractions.dll",
+        "lib/net8.0/Microsoft.Extensions.FileProviders.Abstractions.xml",
+        "lib/net9.0/Microsoft.Extensions.FileProviders.Abstractions.dll",
+        "lib/net9.0/Microsoft.Extensions.FileProviders.Abstractions.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.FileProviders.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.FileProviders.Abstractions.xml",
+        "microsoft.extensions.fileproviders.abstractions.10.0.5.nupkg.sha512",
+        "microsoft.extensions.fileproviders.abstractions.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "Microsoft.Extensions.Hosting.Abstractions/10.0.5": {
+      "sha512": "+Wb7KAMVZTomwJkQrjuPTe5KBzGod7N8XeG+ScxRlkPOB4sZLG4ccVwjV4Phk5BCJt7uIMnGHVoN6ZMVploX+g==",
+      "type": "package",
+      "path": "microsoft.extensions.hosting.abstractions/10.0.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net461/Microsoft.Extensions.Hosting.Abstractions.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/Microsoft.Extensions.Hosting.Abstractions.targets",
+        "lib/net10.0/Microsoft.Extensions.Hosting.Abstractions.dll",
+        "lib/net10.0/Microsoft.Extensions.Hosting.Abstractions.xml",
+        "lib/net462/Microsoft.Extensions.Hosting.Abstractions.dll",
+        "lib/net462/Microsoft.Extensions.Hosting.Abstractions.xml",
+        "lib/net8.0/Microsoft.Extensions.Hosting.Abstractions.dll",
+        "lib/net8.0/Microsoft.Extensions.Hosting.Abstractions.xml",
+        "lib/net9.0/Microsoft.Extensions.Hosting.Abstractions.dll",
+        "lib/net9.0/Microsoft.Extensions.Hosting.Abstractions.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.Hosting.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Hosting.Abstractions.xml",
+        "lib/netstandard2.1/Microsoft.Extensions.Hosting.Abstractions.dll",
+        "lib/netstandard2.1/Microsoft.Extensions.Hosting.Abstractions.xml",
+        "microsoft.extensions.hosting.abstractions.10.0.5.nupkg.sha512",
+        "microsoft.extensions.hosting.abstractions.nuspec",
         "useSharedDesignerContext.txt"
       ]
     },
@@ -4168,8 +4332,11 @@
   },
   "projectFileDependencyGroups": {
     "net10.0": [
+      "FastMember >= 1.5.0",
       "Microsoft.EntityFrameworkCore.Design >= 10.0.5",
       "Microsoft.EntityFrameworkCore.SqlServer >= 10.0.5",
+      "Microsoft.Extensions.Caching.StackExchangeRedis >= 10.0.5",
+      "Microsoft.Extensions.Hosting.Abstractions >= 10.0.5",
       "RncPlatform.Application >= 1.0.0",
       "RncPlatform.Domain >= 1.0.0",
       "StackExchange.Redis >= 2.12.14"
@@ -4182,11 +4349,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj",
+      "projectUniqueName": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj",
       "projectName": "RncPlatform.Infrastructure",
-      "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj",
+      "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\Heury Bernal\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Infrastructure\\obj\\",
+      "outputPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -4208,11 +4375,11 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj": {
-              "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj"
+            "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj": {
+              "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj"
             },
-            "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj": {
-              "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj"
+            "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj": {
+              "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj"
             }
           }
         }
@@ -4233,6 +4400,10 @@
       "net10.0": {
         "targetAlias": "net10.0",
         "dependencies": {
+          "FastMember": {
+            "target": "Package",
+            "version": "[1.5.0, )"
+          },
           "Microsoft.EntityFrameworkCore.Design": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "suppressParent": "All",
@@ -4240,6 +4411,14 @@
             "version": "[10.0.5, )"
           },
           "Microsoft.EntityFrameworkCore.SqlServer": {
+            "target": "Package",
+            "version": "[10.0.5, )"
+          },
+          "Microsoft.Extensions.Caching.StackExchangeRedis": {
+            "target": "Package",
+            "version": "[10.0.5, )"
+          },
+          "Microsoft.Extensions.Hosting.Abstractions": {
             "target": "Package",
             "version": "[10.0.5, )"
           },

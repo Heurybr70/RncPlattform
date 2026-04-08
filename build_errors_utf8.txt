@@ -1,0 +1,16 @@
+﻿  Determinando los proyectos que se van a restaurar...
+  Todos los proyectos est├ín actualizados para la restauraci├│n.
+  RncPlatform.Domain -> C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Domain\bin\Debug\net10.0\RncPlatform.Domain.dll
+  RncPlatform.Contracts -> C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Contracts\bin\Debug\net10.0\RncPlatform.Contracts.dll
+  RncPlatform.Application -> C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Application\bin\Debug\net10.0\RncPlatform.Application.dll
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\BackgroundJobs\RncSyncWorker.cs(6,28): error CS0234: El tipo o el nombre del espacio de nombres 'Hosting' no existe en el espacio de nombres 'Microsoft.Extensions' (┬┐falta alguna referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\RncPlatform.Infrastructure.csproj]
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\BackgroundJobs\RncSyncWorker.cs(12,30): error CS0246: El nombre del tipo o del espacio de nombres 'BackgroundService' no se encontr├│ (┬┐falta una directiva using o una referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\RncPlatform.Infrastructure.csproj]
+
+ERROR al compilar.
+
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\BackgroundJobs\RncSyncWorker.cs(6,28): error CS0234: El tipo o el nombre del espacio de nombres 'Hosting' no existe en el espacio de nombres 'Microsoft.Extensions' (┬┐falta alguna referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\RncPlatform.Infrastructure.csproj]
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\BackgroundJobs\RncSyncWorker.cs(12,30): error CS0246: El nombre del tipo o del espacio de nombres 'BackgroundService' no se encontr├│ (┬┐falta una directiva using o una referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\RncPlatform.Infrastructure.csproj]
+    0 Advertencia(s)
+    2 Errores
+
+Tiempo transcurrido 00:00:04.39

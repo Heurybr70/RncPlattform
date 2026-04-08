@@ -25,13 +25,35 @@ public class DgiiRncDownloader : IRncSourceDownloader
 
     public async Task<(string FilePath, string SourceName)> DownloadLatestDataAsync(CancellationToken cancellationToken = default)
     {
-        var zipUrl = _configuration["Dgii:ZipUrl"] ?? "https://dgii.gov.do/app/WebApps/ConsultasWeb2/ConsultasWeb/consultas/rnc.aspx/DGII_RNC.zip";
+        var zipUrl = _configuration["Dgii:ZipUrl"] ?? "https://dgii.gov.do/app/WebApps/Consultas/RNC/DGII_RNC.zip";
         var sourceName = _configuration["Dgii:SourceName"] ?? "DGII_RNC";
 
         _logger.LogInformation("Descargando archivo desde {Url}", zipUrl);
 
-        var response = await _httpClient.GetAsync(zipUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        const int maxRetries = 3;
+        HttpResponseMessage? response = null;
+        
+        for (int i = 0; i < maxRetries; i++)
+        {
+            try
+            {
+                response = await _httpClient.GetAsync(zipUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                if (response.IsSuccessStatusCode) break;
+            }
+            catch (Exception ex) when (i < maxRetries - 1)
+            {
+                _logger.LogWarning(ex, "Intento de descarga {Attempt} fallido. Reintentando...", i + 1);
+                await Task.Delay(2000, cancellationToken);
+            }
+        }
+
+        response!.EnsureSuccessStatusCode();
+
+        var contentType = response.Content.Headers.ContentType?.MediaType;
+        if (contentType != null && contentType.Contains("text/html"))
+        {
+            throw new InvalidOperationException("El servidor de DGII devolvió una página HTML en lugar del ZIP. Es posible que el servicio esté temporalmente bloqueado o en mantenimiento.");
+        }
 
         var tempZipPath = Path.GetTempFileName();
         var tempTxtPath = Path.GetTempFileName() + ".txt";
@@ -42,21 +64,37 @@ public class DgiiRncDownloader : IRncSourceDownloader
             await stream.CopyToAsync(fileStream, cancellationToken);
         }
 
-        _logger.LogInformation("Archivo ZIP descargado en {TempZipPath}. Extrayendo TXT...", tempZipPath);
-
-        // DGII file is usually a ZIP with a single TXT file inside
-        using (var zip = ZipFile.OpenRead(tempZipPath))
+        var fileInfo = new FileInfo(tempZipPath);
+        if (fileInfo.Length < 1000)
         {
-            if (zip.Entries.Count == 0)
-                throw new InvalidOperationException("El ZIP descargado está vacío.");
-
-            var entry = zip.Entries[0]; // Assume first file is the TXT
-            entry.ExtractToFile(tempTxtPath, overwrite: true);
+            if (File.Exists(tempZipPath)) File.Delete(tempZipPath);
+            throw new InvalidOperationException($"El archivo descargado es demasiado pequeño ({fileInfo.Length} bytes). Posible descarga corrupta.");
         }
 
-        File.Delete(tempZipPath);
-        _logger.LogInformation("Archivo TXT extraído en {TempTxtPath}", tempTxtPath);
+        _logger.LogInformation("Archivo ZIP descargado ({Size} bytes) en {TempZipPath}. Extrayendo TXT...", fileInfo.Length, tempZipPath);
 
+        try
+        {
+            using (var zip = ZipFile.OpenRead(tempZipPath))
+            {
+                if (zip.Entries.Count == 0)
+                    throw new InvalidOperationException("El ZIP descargado no contiene archivos.");
+
+                var entry = zip.Entries[0];
+                entry.ExtractToFile(tempTxtPath, overwrite: true);
+            }
+        }
+        catch (InvalidDataException ex)
+        {
+            _logger.LogError(ex, "Error al abrir el archivo ZIP. Parece estar corrupto.");
+            throw new InvalidOperationException("El archivo descargado no es un ZIP válido o está incompleto. Por favor, intente de nuevo en unos minutos.", ex);
+        }
+        finally
+        {
+            if (File.Exists(tempZipPath)) File.Delete(tempZipPath);
+        }
+
+        _logger.LogInformation("Archivo TXT extraído exitosamente en {TempTxtPath}", tempTxtPath);
         return (tempTxtPath, sourceName);
     }
 

@@ -34,11 +34,10 @@ public class RncFileParser : IRncFileParser
                 NombreORazonSocial = parts[1].Trim(),
                 NombreComercial = parts[2].Trim(),
                 Categoria = parts[3].Trim(),
-                RegimenPago = parts[4].Trim(),
-                Estado = parts[5].Trim(),
-                ActividadEconomica = parts[6].Trim(),
-                // ...otros campos se mapearían según pos en el TXT real
-                // Por ejemplo, parts 7, 8, etc. Depende de DGII 2024.
+                ActividadEconomica = parts[3].Trim(), // En el TXT actual, la actividad/categoría parece estar en el mismo campo
+                FechaConstitucion = parts.Length > 8 ? parts[8].Trim() : null,
+                Estado = parts.Length > 9 ? parts[9].Trim() : null,
+                RegimenPago = parts.Length > 10 ? parts[10].Trim() : null,
             };
         }
     }

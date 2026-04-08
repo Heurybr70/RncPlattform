@@ -1,0 +1,14 @@
+﻿  Determinando los proyectos que se van a restaurar...
+  Todos los proyectos est├ín actualizados para la restauraci├│n.
+  RncPlatform.Contracts -> C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Contracts\bin\Debug\net10.0\RncPlatform.Contracts.dll
+  RncPlatform.Domain -> C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Domain\bin\Debug\net10.0\RncPlatform.Domain.dll
+  RncPlatform.Application -> C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Application\bin\Debug\net10.0\RncPlatform.Application.dll
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\DependencyInjection.cs(27,18): error CS1061: "IServiceCollection" no contiene una definici├│n para "AddStackExchangeRedisCache" ni un m├®todo de extensi├│n accesible "AddStackExchangeRedisCache" que acepte un primer argumento del tipo "IServiceCollection" (┬┐falta alguna directiva using o una referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\RncPlatform.Infrastructure.csproj]
+
+ERROR al compilar.
+
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\DependencyInjection.cs(27,18): error CS1061: "IServiceCollection" no contiene una definici├│n para "AddStackExchangeRedisCache" ni un m├®todo de extensi├│n accesible "AddStackExchangeRedisCache" que acepte un primer argumento del tipo "IServiceCollection" (┬┐falta alguna directiva using o una referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Infrastructure\RncPlatform.Infrastructure.csproj]
+    0 Advertencia(s)
+    1 Errores
+
+Tiempo transcurrido 00:00:03.46

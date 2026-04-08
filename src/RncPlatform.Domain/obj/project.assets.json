@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj",
+      "projectUniqueName": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj",
       "projectName": "RncPlatform.Domain",
-      "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj",
+      "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj",
       "packagesPath": "C:\\Users\\Heury Bernal\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\obj\\",
+      "outputPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

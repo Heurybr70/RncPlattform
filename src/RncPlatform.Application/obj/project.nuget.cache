@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "WuITICwDgKM=",
+  "dgSpecHash": "k0J1U4x+WX0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj",
+  "projectFilePath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Heury Bernal\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
     "C:\\Users\\Heury Bernal\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.1.1\\fluentvalidation.dependencyinjectionextensions.12.1.1.nupkg.sha512",

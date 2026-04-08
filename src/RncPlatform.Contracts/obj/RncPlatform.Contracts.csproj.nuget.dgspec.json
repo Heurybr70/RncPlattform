@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj": {}
+    "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj": {
+    "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj",
+        "projectUniqueName": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj",
         "projectName": "RncPlatform.Contracts",
-        "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj",
+        "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj",
         "packagesPath": "C:\\Users\\Heury Bernal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\obj\\",
+        "outputPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

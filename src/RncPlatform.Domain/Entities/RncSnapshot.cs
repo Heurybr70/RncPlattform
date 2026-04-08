@@ -6,9 +6,9 @@ namespace RncPlatform.Domain.Entities;
 public class RncSnapshot
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public string SourceName { get; set; } = default!;
-    public string SourceUrl { get; set; } = default!;
-    public string SourceFileName { get; set; } = default!;
+    public string? SourceName { get; set; }
+    public string SourceUrl { get; set; } = string.Empty;
+    public string? SourceFileName { get; set; }
     public string? FileHash { get; set; }
     public int RecordCount { get; set; }
     public int InsertedCount { get; set; }

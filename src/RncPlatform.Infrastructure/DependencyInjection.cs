@@ -23,12 +23,20 @@ public static class DependencyInjection
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(RncDbContext).Assembly.FullName)));
 
-        // Redis for Caching
-        services.AddStackExchangeRedisCache(options =>
+        // Redis for Caching with Memory Fallback
+        var redisConnectionString = configuration.GetConnectionString("Valkey");
+        if (string.IsNullOrEmpty(redisConnectionString))
         {
-            options.Configuration = configuration.GetConnectionString("Valkey");
-            options.InstanceName = "RncPlatform_";
-        });
+            services.AddDistributedMemoryCache();
+        }
+        else
+        {
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConnectionString;
+                options.InstanceName = "RncPlatform_";
+            });
+        }
 
         // Repositories
         services.AddScoped<ITaxpayerRepository, TaxpayerRepository>();

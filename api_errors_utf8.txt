@@ -1,0 +1,14 @@
+﻿C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\Program.cs(27,61): error CS0234: El tipo o el nombre del espacio de nombres 'Models' no existe en el espacio de nombres 'Microsoft.OpenApi' (┬┐falta alguna referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\RncPlatform.Api.csproj]
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\Program.cs(31,14): error CS0234: El tipo o el nombre del espacio de nombres 'Models' no existe en el espacio de nombres 'Microsoft.OpenApi' (┬┐falta alguna referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\RncPlatform.Api.csproj]
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\Program.cs(32,16): error CS0234: El tipo o el nombre del espacio de nombres 'Models' no existe en el espacio de nombres 'Microsoft.OpenApi' (┬┐falta alguna referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\RncPlatform.Api.csproj]
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\Program.cs(35,52): error CS0234: El tipo o el nombre del espacio de nombres 'Models' no existe en el espacio de nombres 'Microsoft.OpenApi' (┬┐falta alguna referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\RncPlatform.Api.csproj]
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\Program.cs(38,35): error CS0234: El tipo o el nombre del espacio de nombres 'Models' no existe en el espacio de nombres 'Microsoft.OpenApi' (┬┐falta alguna referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\RncPlatform.Api.csproj]
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\Program.cs(40,51): error CS0234: El tipo o el nombre del espacio de nombres 'Models' no existe en el espacio de nombres 'Microsoft.OpenApi' (┬┐falta alguna referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\RncPlatform.Api.csproj]
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\Program.cs(40,84): error CS0234: El tipo o el nombre del espacio de nombres 'Models' no existe en el espacio de nombres 'Microsoft.OpenApi' (┬┐falta alguna referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\RncPlatform.Api.csproj]
+C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\Program.cs(43,22): error CS0234: El tipo o el nombre del espacio de nombres 'Models' no existe en el espacio de nombres 'Microsoft.OpenApi' (┬┐falta alguna referencia de ensamblado?) [C:\Users\Heury Bernal\Desktop\RncPlatform\RncPlatform\src\RncPlatform.Api\RncPlatform.Api.csproj]
+
+ERROR al compilar.
+    0 Advertencia(s)
+    8 Errores
+
+Tiempo transcurrido 00:00:04.07

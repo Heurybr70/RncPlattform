@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Api\\RncPlatform.Api.csproj": {}
+    "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Api\\RncPlatform.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Api\\RncPlatform.Api.csproj": {
+    "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Api\\RncPlatform.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Api\\RncPlatform.Api.csproj",
+        "projectUniqueName": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Api\\RncPlatform.Api.csproj",
         "projectName": "RncPlatform.Api",
-        "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Api\\RncPlatform.Api.csproj",
+        "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Api\\RncPlatform.Api.csproj",
         "packagesPath": "C:\\Users\\Heury Bernal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Api\\obj\\",
+        "outputPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -33,14 +33,14 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj": {
-                "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj"
+              "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj": {
+                "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj"
               },
-              "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj": {
-                "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj"
+              "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj": {
+                "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj"
               },
-              "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj"
+              "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj"
               }
             }
           }
@@ -69,9 +69,11 @@
               "target": "Package",
               "version": "[9.0.0, )"
             },
-            "Microsoft.AspNetCore.OpenApi": {
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
               "target": "Package",
-              "version": "[10.0.3, )"
+              "version": "[10.0.5, )"
             },
             "OpenTelemetry.Extensions.Hosting": {
               "target": "Package",
@@ -84,6 +86,10 @@
             "Serilog.AspNetCore": {
               "target": "Package",
               "version": "[10.0.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[7.2.0, )"
             }
           },
           "imports": [
@@ -523,14 +529,14 @@
         }
       }
     },
-    "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj": {
+    "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj",
+        "projectUniqueName": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj",
         "projectName": "RncPlatform.Application",
-        "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj",
+        "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj",
         "packagesPath": "C:\\Users\\Heury Bernal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Application\\obj\\",
+        "outputPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -552,11 +558,11 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj": {
-                "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj"
+              "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj": {
+                "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj"
               },
-              "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj": {
-                "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj"
+              "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj": {
+                "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj"
               }
             }
           }
@@ -884,14 +890,14 @@
         }
       }
     },
-    "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj": {
+    "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj",
+        "projectUniqueName": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj",
         "projectName": "RncPlatform.Contracts",
-        "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj",
+        "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\RncPlatform.Contracts.csproj",
         "packagesPath": "C:\\Users\\Heury Bernal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Contracts\\obj\\",
+        "outputPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Contracts\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1224,14 +1230,14 @@
         }
       }
     },
-    "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj": {
+    "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj",
         "projectName": "RncPlatform.Domain",
-        "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj",
+        "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj",
         "packagesPath": "C:\\Users\\Heury Bernal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\obj\\",
+        "outputPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1564,14 +1570,14 @@
         }
       }
     },
-    "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj": {
+    "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj",
         "projectName": "RncPlatform.Infrastructure",
-        "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj",
+        "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Infrastructure\\RncPlatform.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\Heury Bernal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Infrastructure\\obj\\",
+        "outputPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1593,11 +1599,11 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj": {
-                "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj"
+              "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj": {
+                "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Application\\RncPlatform.Application.csproj"
               },
-              "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj": {
-                "projectPath": "C:\\Users\\Heury Bernal\\.gemini\\antigravity\\scratch\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj"
+              "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj": {
+                "projectPath": "C:\\Users\\Heury Bernal\\Desktop\\RncPlatform\\RncPlatform\\src\\RncPlatform.Domain\\RncPlatform.Domain.csproj"
               }
             }
           }
@@ -1618,6 +1624,10 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "FastMember": {
+              "target": "Package",
+              "version": "[1.5.0, )"
+            },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -1625,6 +1635,14 @@
               "version": "[10.0.5, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[10.0.5, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[10.0.5, )"
+            },
+            "Microsoft.Extensions.Hosting.Abstractions": {
               "target": "Package",
               "version": "[10.0.5, )"
             },

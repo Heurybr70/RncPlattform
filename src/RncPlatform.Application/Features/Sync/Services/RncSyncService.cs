@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using RncPlatform.Application.Abstractions.ExternalServices;
 using RncPlatform.Application.Abstractions.Locking;
 using RncPlatform.Application.Abstractions.Persistence;
@@ -22,6 +23,7 @@ public class RncSyncService : IRncSyncService
     private readonly IRncSourceDownloader _downloader;
     private readonly IRncFileParser _parser;
     private readonly IDistributedLockService _lockService;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<RncSyncService> _logger;
 
     public RncSyncService(
@@ -32,6 +34,7 @@ public class RncSyncService : IRncSyncService
         IRncSourceDownloader downloader,
         IRncFileParser parser,
         IDistributedLockService lockService,
+        IServiceScopeFactory scopeFactory,
         ILogger<RncSyncService> logger)
     {
         _snapshotRepo = snapshotRepo;
@@ -41,6 +44,7 @@ public class RncSyncService : IRncSyncService
         _downloader = downloader;
         _parser = parser;
         _lockService = lockService;
+        _scopeFactory = scopeFactory;
         _logger = logger;
     }
 
@@ -55,11 +59,20 @@ public class RncSyncService : IRncSyncService
             return new SyncResultDto { Status = "Skipped - Already Running" };
         }
 
-        var snapshot = new RncSnapshot { Id = Guid.NewGuid(), Status = SnapshotStatus.Running };
+        var snapshot = new RncSnapshot 
+        { 
+            Id = Guid.NewGuid(), 
+            Status = SnapshotStatus.Running,
+            SourceName = "Pending",
+            SourceFileName = "Pending",
+            SourceUrl = "https://dgii.gov.do" // Valor temporal hasta que el downloader lo use
+        };
+
         try
         {
+            _logger.LogInformation("Guardando Snapshot inicial {SnapshotId}...", snapshot.Id);
             await _snapshotRepo.AddAsync(snapshot, cancellationToken);
-            _logger.LogInformation("Iniciando Snapshot {SnapshotId}", snapshot.Id);
+            _logger.LogInformation("Snapshot inicial guardado. Iniciando descarga...");
 
             var (filePath, sourceName) = await _downloader.DownloadLatestDataAsync(cancellationToken);
             var fileHash = await _downloader.GetLastFileHashAsync(cancellationToken);
@@ -96,13 +109,12 @@ public class RncSyncService : IRncSyncService
                 snapshot.RecordCount += batch.Count;
             }
 
-            // Comparación y Upsert (en MVP cargaremos de staging -> taxpayer)
-            var inserted = 0;
-            // TODO: Un flujo real requeriría comparar RncStaging vs Taxpayer y crear logs
-            // Por límite de scope MVP usamos un "volcado inteligente"
+            // Comparación y Upsert usando el Bulk MERGE
+            var affectedRows = await _stagingRepo.MergeStagingToTaxpayersAsync(snapshot.Id, cancellationToken);
+            
             snapshot.Status = SnapshotStatus.Success;
             snapshot.CompletedAt = DateTime.UtcNow;
-            snapshot.InsertedCount = snapshot.RecordCount; // MOCK for MVP
+            snapshot.InsertedCount = affectedRows;
             
             await _snapshotRepo.UpdateAsync(snapshot, cancellationToken);
             
@@ -118,13 +130,28 @@ public class RncSyncService : IRncSyncService
             snapshot.Status = SnapshotStatus.Failed;
             snapshot.ErrorMessage = ex.Message;
             snapshot.CompletedAt = DateTime.UtcNow;
-            await _snapshotRepo.UpdateAsync(snapshot, cancellationToken);
+            
+            await UpdateSnapshotStatusInNewScope(snapshot, cancellationToken);
             await UpdateJobState(snapshot);
             throw;
         }
         finally
         {
             await _lockService.ReleaseLockAsync(lockResource, lockedBy, cancellationToken);
+        }
+    }
+
+    private async Task UpdateSnapshotStatusInNewScope(RncSnapshot snapshot, CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var scopedRepo = scope.ServiceProvider.GetRequiredService<IRncSnapshotRepository>();
+            await scopedRepo.UpdateAsync(snapshot, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "No se pudo actualizar el estado del snapshot final (shadow error)");
         }
     }
 

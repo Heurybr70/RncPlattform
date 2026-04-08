@@ -2,6 +2,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using RncPlatform.Application.Abstractions.Locking;
 using RncPlatform.Domain.Entities;
 using RncPlatform.Infrastructure.Persistence;
@@ -10,18 +12,23 @@ namespace RncPlatform.Infrastructure.Locking;
 
 public class DistributedLockService : IDistributedLockService
 {
-    private readonly RncDbContext _dbContext;
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly string _connectionString;
 
-    public DistributedLockService(RncDbContext dbContext)
+    public DistributedLockService(IServiceScopeFactory scopeFactory, IConfiguration configuration)
     {
-        _dbContext = dbContext;
+        _scopeFactory = scopeFactory;
+        _connectionString = configuration.GetConnectionString("DefaultConnection")!;
     }
 
     public async Task<bool> AcquireLockAsync(string resource, string lockedBy, TimeSpan expiration, CancellationToken cancellationToken = default)
     {
         try
         {
-            var lockEntity = await _dbContext.DistributedLocks.FindAsync(new object[] { resource }, cancellationToken);
+            using var scope = _scopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<RncDbContext>();
+            
+            var lockEntity = await dbContext.DistributedLocks.FindAsync(new object[] { resource }, cancellationToken);
 
             if (lockEntity != null)
             {
@@ -31,7 +38,7 @@ public class DistributedLockService : IDistributedLockService
                 lockEntity.LockedBy = lockedBy;
                 lockEntity.LockedAt = DateTime.UtcNow;
                 lockEntity.ExpiresAt = DateTime.UtcNow.Add(expiration);
-                _dbContext.DistributedLocks.Update(lockEntity);
+                dbContext.DistributedLocks.Update(lockEntity);
             }
             else
             {
@@ -42,26 +49,35 @@ public class DistributedLockService : IDistributedLockService
                     LockedAt = DateTime.UtcNow,
                     ExpiresAt = DateTime.UtcNow.Add(expiration)
                 };
-                _dbContext.DistributedLocks.Add(lockEntity);
+                dbContext.DistributedLocks.Add(lockEntity);
             }
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
             return true;
         }
-        catch (DbUpdateException)
+        catch (Exception)
         {
-            // Podría dar FK exception o duplicate (concurrencia)
             return false;
         }
     }
 
     public async Task ReleaseLockAsync(string resource, string lockedBy, CancellationToken cancellationToken = default)
     {
-        var lockEntity = await _dbContext.DistributedLocks.FindAsync(new object[] { resource }, cancellationToken);
-        if (lockEntity != null && lockEntity.LockedBy == lockedBy)
+        try
         {
-            _dbContext.DistributedLocks.Remove(lockEntity);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            using var scope = _scopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<RncDbContext>();
+
+            var lockEntity = await dbContext.DistributedLocks.FindAsync(new object[] { resource }, cancellationToken);
+            if (lockEntity != null && lockEntity.LockedBy == lockedBy)
+            {
+                dbContext.DistributedLocks.Remove(lockEntity);
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+        }
+        catch (Exception)
+        {
+            // Lock release is best-effort or it will expire naturally.
         }
     }
 }

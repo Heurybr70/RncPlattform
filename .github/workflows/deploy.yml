@@ -1,0 +1,49 @@
+name: Deploy to MonsterASP
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # Permite ejecución manual desde GitHub
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore -c Release
+
+    - name: Publish
+      run: dotnet publish src/RncPlatform.Api/RncPlatform.Api.csproj -c Release -o ./publish --no-build
+
+    - name: App Settings Variable Substitution
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: './publish/appsettings.json'
+      env:
+        # Los nombres deben coincidir exactamente con la estructura del JSON
+        ConnectionStrings.DefaultConnection: ${{ secrets.CONNECTIONSTRINGS__DEFAULTCONNECTION }}
+        ConnectionStrings.Valkey: ${{ secrets.CONNECTIONSTRINGS__VALKEY }}
+
+    - name: 🚀 Deploy via FTP to MonsterASP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        port: ${{ secrets.FTP_PORT || 21 }}
+        local-dir: ./publish/
+        server-dir: /wwwroot/
+        # Guardar el estado ayuda a que los despliegues futuros sean más rápidos
+        state-name: .ftp-deploy-sync-state.json
