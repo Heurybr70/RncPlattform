@@ -22,7 +22,7 @@ Optional but recommended:
 
 - `ConnectionStrings__Valkey`: Redis or Valkey endpoint for distributed cache.
 - `Worker__Enabled`: `true` to enable scheduled background syncs.
-- `Worker__TargetHourUtc`: UTC hour for the background sync job.
+- `Worker__RunHourUtc`: UTC hour for the background sync job.
 - `Security__LoginMaxFailedAttempts`: account lockout threshold.
 - `Security__LoginLockoutMinutes`: lockout duration.
 - `Security__LoginRateLimitPermitLimit`: login requests allowed per rate-limit window.
@@ -37,6 +37,8 @@ The deployment workflow at `.github/workflows/deploy.yml` expects these GitHub r
 - `CONNECTIONSTRINGS__VALKEY`: optional. It is injected as `ConnectionStrings.Valkey` when present.
 
 The workflow also removes `appsettings.Development.json` from the publish output to avoid any accidental fallback to the local LocalDB connection string during server deployment.
+
+The current deployment workflow also forces the background worker on in production by publishing `Worker.Enabled=true` and `Worker.RunHourUtc=4`, so the automatic synchronization runs every day around `04:00 UTC`.
 
 `Jwt__SecretKey` is mandatory for the API to boot outside Development. The workflow now fails before deploy if `JWT__SECRETKEY` is missing in GitHub Secrets.
 

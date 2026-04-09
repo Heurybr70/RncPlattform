@@ -56,6 +56,8 @@ jobs:
         ConnectionStrings.DefaultConnection: ${{ secrets.CONNECTIONSTRINGS__DEFAULTCONNECTION }}
         ConnectionStrings.Valkey: ${{ secrets.CONNECTIONSTRINGS__VALKEY }}
         Jwt.SecretKey: ${{ secrets.JWT__SECRETKEY }}
+        Worker.Enabled: 'true'
+        Worker.RunHourUtc: '4'
 
     - name: Prepare maintenance marker for locked IIS files
       shell: bash
