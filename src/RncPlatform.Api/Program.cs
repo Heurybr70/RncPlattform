@@ -335,6 +335,26 @@ app.UseAuthentication();
 app.UseRateLimiter();
 app.UseAuthorization();
 
+app.MapGet("/", () => Results.Ok(new
+{
+    service = "RncPlatform API",
+    status = "online",
+    environment = app.Environment.EnvironmentName,
+    health = new
+    {
+        live = "/health/live",
+        ready = "/health/ready"
+    },
+    endpoints = new
+    {
+        auth = "/api/v1/auth",
+        rncs = "/api/v1/rncs",
+        system = "/api/v1/system"
+    }
+})).AllowAnonymous();
+
+app.MapGet("/health", () => Results.Redirect("/health/live", permanent: false)).AllowAnonymous();
+
 app.MapHealthChecks("/health/live", new HealthCheckOptions
 {
     Predicate = check => check.Tags.Contains("live")
