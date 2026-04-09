@@ -23,9 +23,15 @@ public static class DependencyInjection
     {
         services.Configure<SyncArchiveOptions>(configuration.GetSection("SyncArchive"));
 
+        var defaultConnectionString = configuration.GetConnectionString("DefaultConnection");
+        if (string.IsNullOrWhiteSpace(defaultConnectionString))
+        {
+            throw new InvalidOperationException("No se configuro ConnectionStrings__DefaultConnection para RncPlatform.");
+        }
+
         services.AddDbContext<RncDbContext>(options =>
             options.UseSqlServer(
-                configuration.GetConnectionString("DefaultConnection"),
+                defaultConnectionString,
                 b => b.MigrationsAssembly(typeof(RncDbContext).Assembly.FullName)));
 
         // Redis for Caching with Memory Fallback

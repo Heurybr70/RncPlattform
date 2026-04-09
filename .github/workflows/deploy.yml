@@ -24,8 +24,22 @@ jobs:
     - name: Build
       run: dotnet build --no-restore -c Release
 
+    - name: Validate required deployment secrets
+      shell: bash
+      env:
+        CONNECTIONSTRINGS__DEFAULTCONNECTION: ${{ secrets.CONNECTIONSTRINGS__DEFAULTCONNECTION }}
+      run: |
+        if [ -z "$CONNECTIONSTRINGS__DEFAULTCONNECTION" ]; then
+          echo "Missing required GitHub secret: CONNECTIONSTRINGS__DEFAULTCONNECTION"
+          exit 1
+        fi
+
     - name: Publish
       run: dotnet publish src/RncPlatform.Api/RncPlatform.Api.csproj -c Release -o ./publish --no-build
+
+    - name: Remove development-only configuration from publish output
+      shell: bash
+      run: rm -f ./publish/appsettings.Development.json
 
     - name: App Settings Variable Substitution
       uses: microsoft/variable-substitution@v1

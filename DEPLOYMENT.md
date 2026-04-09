@@ -27,6 +27,17 @@ Optional but recommended:
 - `Security__LoginRateLimitPermitLimit`: login requests allowed per rate-limit window.
 - `Security__LoginRateLimitWindowMinutes`: login rate-limit window.
 
+## GitHub Actions deployment secrets
+
+The deployment workflow at `.github/workflows/deploy.yml` expects these GitHub repository secrets:
+
+- `CONNECTIONSTRINGS__DEFAULTCONNECTION`: required. It is injected into `publish/appsettings.json` as `ConnectionStrings.DefaultConnection`.
+- `CONNECTIONSTRINGS__VALKEY`: optional. It is injected as `ConnectionStrings.Valkey` when present.
+
+The workflow also removes `appsettings.Development.json` from the publish output to avoid any accidental fallback to the local LocalDB connection string during server deployment.
+
+`Jwt__SecretKey` is still mandatory for the API to boot outside Development, but that value must be provided by the target host environment or by extending the workflow with a repository secret that exists in your GitHub configuration.
+
 ## First deployment
 
 1. Provision SQL Server and, if running multiple instances, Redis or Valkey.
