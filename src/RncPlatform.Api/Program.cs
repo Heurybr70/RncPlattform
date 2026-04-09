@@ -24,6 +24,7 @@ using Swashbuckle.AspNetCore.Annotations;
 var builder = WebApplication.CreateBuilder(args);
 
 var securitySettings = builder.Configuration.GetSection("Security").Get<SecurityOptions>() ?? new SecurityOptions();
+var swaggerEnabled = builder.Environment.IsDevelopment() || builder.Configuration.GetValue("Swagger:Enabled", false);
 
 // Configurar Serilog
 builder.Host.UseSerilog((context, services, configuration) => configuration
@@ -318,7 +319,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-if (app.Environment.IsDevelopment())
+if (swaggerEnabled)
 {
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "RncPlatform API v1"));
@@ -340,6 +341,7 @@ app.MapGet("/", () => Results.Ok(new
     service = "RncPlatform API",
     status = "online",
     environment = app.Environment.EnvironmentName,
+    docs = swaggerEnabled ? "/swagger" : null,
     health = new
     {
         live = "/health/live",

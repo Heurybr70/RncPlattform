@@ -16,6 +16,7 @@ Set these values outside source control in the target environment:
 - `Bootstrap__Role`: `Admin` or `UserManager`.
 - `Bootstrap__Enabled`: optional switch to disable bootstrap in controlled environments such as integration tests.
 - `SyncArchive__RootPath`: absolute directory for archived DGII files. Use an absolute path in production.
+- `Swagger__Enabled`: optional. Enables the Swagger UI outside Development.
 
 Optional but recommended:
 
@@ -65,6 +66,7 @@ dotnet ef database update --project src/RncPlatform.Infrastructure/RncPlatform.I
 - Swagger is only exposed in Development.
 - `SyncArchive__RootPath` should point to persistent storage because `reprocess` depends on archived source files.
 - `GET /api/v1/rncs/{rnc}` remains the exact lookup path. `GET /api/v1/rncs?term=` now treats numeric terms as exact RNC lookup and name terms as prefix search with at least 3 characters, which is intentionally more index-friendly for production.
+- Swagger UI is available when `Swagger__Enabled=true`. The current repo default publishes it at `/swagger`.
 
 ## Public exposure checklist
 
