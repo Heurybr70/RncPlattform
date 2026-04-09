@@ -50,8 +50,42 @@ jobs:
         ConnectionStrings.DefaultConnection: ${{ secrets.CONNECTIONSTRINGS__DEFAULTCONNECTION }}
         ConnectionStrings.Valkey: ${{ secrets.CONNECTIONSTRINGS__VALKEY }}
 
+    - name: Prepare maintenance marker for locked IIS files
+      shell: bash
+      run: |
+        mkdir -p ./deploy-control ./deploy-control-empty
+        cat > ./deploy-control/app_offline.htm <<'EOF'
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+          <title>RncPlatform maintenance</title>
+        </head>
+        <body>
+          <h1>RncPlatform is being updated</h1>
+          <p>Please try again in a couple of minutes.</p>
+        </body>
+        </html>
+        EOF
+        cp ./deploy-control/app_offline.htm ./publish/app_offline.htm
+
+    - name: Put app offline before replacing DLLs
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        port: ${{ secrets.FTP_PORT || 21 }}
+        local-dir: ./deploy-control/
+        server-dir: /wwwroot/
+        state-name: .ftp-deploy-offline-state.json
+
+    - name: Wait for application shutdown
+      shell: bash
+      run: sleep 10
+
     - name: 🚀 Deploy via FTP to MonsterASP
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.6
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
@@ -61,3 +95,15 @@ jobs:
         server-dir: /wwwroot/
         # Guardar el estado ayuda a que los despliegues futuros sean más rápidos
         state-name: .ftp-deploy-sync-state.json
+
+    - name: Remove maintenance marker after successful deploy
+      if: ${{ success() }}
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        port: ${{ secrets.FTP_PORT || 21 }}
+        local-dir: ./deploy-control-empty/
+        server-dir: /wwwroot/
+        state-name: .ftp-deploy-offline-state.json

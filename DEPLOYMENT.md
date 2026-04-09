@@ -38,6 +38,8 @@ The workflow also removes `appsettings.Development.json` from the publish output
 
 `Jwt__SecretKey` is still mandatory for the API to boot outside Development, but that value must be provided by the target host environment or by extending the workflow with a repository secret that exists in your GitHub configuration.
 
+For shared IIS hosting over FTP, the workflow now uploads `app_offline.htm` before replacing the published binaries and removes it after a successful deploy. This avoids locked-file failures such as FTP `550 Could not access file: driver error: calling GetHandle: failure` when `RncPlatform.Api.dll` is still in use.
+
 ## First deployment
 
 1. Provision SQL Server and, if running multiple instances, Redis or Valkey.
