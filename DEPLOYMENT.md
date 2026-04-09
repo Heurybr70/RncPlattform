@@ -32,11 +32,12 @@ Optional but recommended:
 The deployment workflow at `.github/workflows/deploy.yml` expects these GitHub repository secrets:
 
 - `CONNECTIONSTRINGS__DEFAULTCONNECTION`: required. It is injected into `publish/appsettings.json` as `ConnectionStrings.DefaultConnection`.
+- `JWT__SECRETKEY`: required. It is injected into `publish/appsettings.json` as `Jwt.SecretKey`.
 - `CONNECTIONSTRINGS__VALKEY`: optional. It is injected as `ConnectionStrings.Valkey` when present.
 
 The workflow also removes `appsettings.Development.json` from the publish output to avoid any accidental fallback to the local LocalDB connection string during server deployment.
 
-`Jwt__SecretKey` is still mandatory for the API to boot outside Development, but that value must be provided by the target host environment or by extending the workflow with a repository secret that exists in your GitHub configuration.
+`Jwt__SecretKey` is mandatory for the API to boot outside Development. The workflow now fails before deploy if `JWT__SECRETKEY` is missing in GitHub Secrets.
 
 For shared IIS hosting over FTP, the workflow now uploads `app_offline.htm` before replacing the published binaries and removes it after a successful deploy. This avoids locked-file failures such as FTP `550 Could not access file: driver error: calling GetHandle: failure` when `RncPlatform.Api.dll` is still in use.
 

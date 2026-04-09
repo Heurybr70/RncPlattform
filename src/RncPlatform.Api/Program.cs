@@ -17,6 +17,7 @@ using RncPlatform.Api.Startup;
 using RncPlatform.Contracts.Responses;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 using RncPlatform.Domain.Enums;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -346,7 +347,14 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
 
 app.MapControllers();
 
-await PrivilegedUserBootstrapper.EnsurePrivilegedUserAsync(app.Services, app.Configuration, app.Environment);
+try
+{
+    await PrivilegedUserBootstrapper.EnsurePrivilegedUserAsync(app.Services, app.Configuration, app.Environment);
+}
+catch (Exception exception)
+{
+    app.Logger.LogError(exception, "No se pudo ejecutar el bootstrap de usuario privilegiado durante el arranque.");
+}
 
 app.Run();
 

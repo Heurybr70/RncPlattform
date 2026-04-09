@@ -28,9 +28,15 @@ jobs:
       shell: bash
       env:
         CONNECTIONSTRINGS__DEFAULTCONNECTION: ${{ secrets.CONNECTIONSTRINGS__DEFAULTCONNECTION }}
+        JWT__SECRETKEY: ${{ secrets.JWT__SECRETKEY }}
       run: |
         if [ -z "$CONNECTIONSTRINGS__DEFAULTCONNECTION" ]; then
           echo "Missing required GitHub secret: CONNECTIONSTRINGS__DEFAULTCONNECTION"
+          exit 1
+        fi
+
+        if [ -z "$JWT__SECRETKEY" ]; then
+          echo "Missing required GitHub secret: JWT__SECRETKEY"
           exit 1
         fi
 
@@ -49,6 +55,7 @@ jobs:
         # Los nombres deben coincidir exactamente con la estructura del JSON
         ConnectionStrings.DefaultConnection: ${{ secrets.CONNECTIONSTRINGS__DEFAULTCONNECTION }}
         ConnectionStrings.Valkey: ${{ secrets.CONNECTIONSTRINGS__VALKEY }}
+        Jwt.SecretKey: ${{ secrets.JWT__SECRETKEY }}
 
     - name: Prepare maintenance marker for locked IIS files
       shell: bash
