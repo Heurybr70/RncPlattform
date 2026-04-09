@@ -10,7 +10,11 @@ public class TaxpayerConfiguration : IEntityTypeConfiguration<Taxpayer>
     {
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.Rnc).IsUnique();
-        builder.HasIndex(x => x.NombreORazonSocial);
+        builder.HasIndex(x => new { x.NombreORazonSocial, x.Rnc })
+            .HasDatabaseName("IX_Taxpayers_Name_Rnc");
+        builder.HasIndex(x => new { x.NombreComercial, x.Rnc })
+            .HasDatabaseName("IX_Taxpayers_CommercialName_Rnc")
+            .HasFilter("[NombreComercial] IS NOT NULL");
         builder.HasIndex(x => x.Estado);
         builder.HasIndex(x => x.IsActiveInLatestSnapshot);
 

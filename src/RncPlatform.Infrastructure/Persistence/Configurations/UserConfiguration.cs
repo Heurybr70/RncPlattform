@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RncPlatform.Domain.Entities;
+using RncPlatform.Domain.Enums;
 
 namespace RncPlatform.Infrastructure.Persistence.Configurations;
 
@@ -19,6 +20,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(x => x.Username)
             .IsUnique();
 
+        builder.HasIndex(x => x.Role);
+
+        builder.HasIndex(x => x.IsActive);
+
         builder.Property(x => x.Email)
             .HasMaxLength(150);
 
@@ -31,5 +36,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(x => x.FullName)
             .HasMaxLength(100);
+
+        builder.Property(x => x.Role)
+            .HasConversion<int>()
+            .HasDefaultValue(UserRole.User);
+
+        builder.Property(x => x.TokenVersion)
+            .HasDefaultValue(0);
+
+        builder.Property(x => x.FailedLoginAttempts)
+            .HasDefaultValue(0);
     }
 }

@@ -11,5 +11,5 @@ public interface IRncStagingRepository
     Task ClearBatchAsync(Guid executionId, CancellationToken cancellationToken = default);
     Task AddBatchAsync(IEnumerable<RncStaging> stagingRecords, CancellationToken cancellationToken = default);
     Task<int> CompareAndGetOperationsAsync(Guid executionId, CancellationToken cancellationToken = default);
-    Task<int> MergeStagingToTaxpayersAsync(Guid executionId, CancellationToken cancellationToken = default);
+    Task<StagingMergeResult> MergeStagingToTaxpayersAsync(Guid executionId, CancellationToken cancellationToken = default);
 }

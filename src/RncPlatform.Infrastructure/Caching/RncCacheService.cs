@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace RncPlatform.Infrastructure.Caching;
 
 public class RncCacheService : IRncCacheService
 {
+    private const string NamespacePrefix = "cache-namespace:";
     private readonly IDistributedCache _cache;
     private readonly ILogger<RncCacheService> _logger;
 
@@ -62,6 +64,58 @@ public class RncCacheService : IRncCacheService
 
     public Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
     {
-        return Task.CompletedTask;
+        return InvalidateNamespaceAsync(prefix, cancellationToken);
+    }
+
+    public async Task<string> GetNamespaceVersionAsync(string cacheNamespace, CancellationToken cancellationToken = default)
+    {
+        var key = BuildNamespaceKey(cacheNamespace);
+
+        try
+        {
+            var bytes = await _cache.GetAsync(key, cancellationToken);
+            if (bytes != null)
+            {
+                return Encoding.UTF8.GetString(bytes);
+            }
+
+            const string initialVersion = "1";
+            await SetNamespaceVersionAsync(key, initialVersion, cancellationToken);
+            return initialVersion;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al obtener la versión del namespace de caché: {Namespace}", cacheNamespace);
+            return "1";
+        }
+    }
+
+    public async Task InvalidateNamespaceAsync(string cacheNamespace, CancellationToken cancellationToken = default)
+    {
+        var key = BuildNamespaceKey(cacheNamespace);
+        await SetNamespaceVersionAsync(key, Guid.NewGuid().ToString("N"), cancellationToken);
+    }
+
+    private static string BuildNamespaceKey(string cacheNamespace)
+    {
+        return $"{NamespacePrefix}{cacheNamespace}";
+    }
+
+    private async Task SetNamespaceVersionAsync(string key, string value, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(30)
+            };
+
+            var bytes = Encoding.UTF8.GetBytes(value);
+            await _cache.SetAsync(key, bytes, options, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al actualizar la versión del namespace de caché para la llave: {Key}", key);
+        }
     }
 }

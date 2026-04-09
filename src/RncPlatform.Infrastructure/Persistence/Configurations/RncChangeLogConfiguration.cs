@@ -11,6 +11,7 @@ public class RncChangeLogConfiguration : IEntityTypeConfiguration<RncChangeLog>
         builder.HasKey(x => x.Id);
         builder.HasIndex(x => x.Rnc);
         builder.HasIndex(x => x.SnapshotId);
+        builder.HasIndex(x => new { x.Rnc, x.DetectedAt });
 
         builder.Property(x => x.ChangeType).HasMaxLength(50);
     }

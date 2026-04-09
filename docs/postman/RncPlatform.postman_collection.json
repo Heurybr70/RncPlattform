@@ -1,0 +1,352 @@
+{
+  "info": {
+    "_postman_id": "db8e4f4b-8938-4d7e-a5a7-c29d95115f13",
+    "name": "RncPlatform API",
+    "description": "Coleccion base para autenticacion, consultas RNC, monitoreo y endpoints administrativos de RncPlatform.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://localhost:7207" },
+    { "key": "username", "value": "admin" },
+    { "key": "password", "value": "RncPlatformAdmin2024!" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "rnc", "value": "101010101" },
+    { "key": "searchTerm", "value": "ALF" },
+    { "key": "snapshotId", "value": "" },
+    { "key": "userId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var data = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', data.token);",
+                  "  pm.collectionVariables.set('refreshToken', data.refreshToken);",
+                  "  pm.collectionVariables.set('userId', data.userId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Refresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var data = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', data.token);",
+                  "  pm.collectionVariables.set('refreshToken', data.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "Register User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"new-user\",\n  \"password\": \"Password123!\",\n  \"email\": \"new-user@example.com\",\n  \"fullName\": \"New User\",\n  \"role\": \"User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get User By Id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update User Access",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"User\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/users/{{userId}}/access",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "users", "{{userId}}", "access"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "RNC Queries",
+      "item": [
+        {
+          "name": "Get Taxpayer By RNC",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/rncs/{{rnc}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "rncs", "{{rnc}}"]
+            }
+          }
+        },
+        {
+          "name": "Search Taxpayers Offset",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/rncs?term={{searchTerm}}&page=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "rncs"],
+              "query": [
+                { "key": "term", "value": "{{searchTerm}}" },
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Taxpayers Cursor First Page",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/rncs?term={{searchTerm}}&pageSize=20&cursor=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "rncs"],
+              "query": [
+                { "key": "term", "value": "{{searchTerm}}" },
+                { "key": "pageSize", "value": "20" },
+                { "key": "cursor", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get RNC Changes",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/rncs/{{rnc}}/changes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "rncs", "{{rnc}}", "changes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Sync Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/system/sync-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "system", "sync-status"]
+            }
+          }
+        },
+        {
+          "name": "Health Live",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/health/live",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "live"]
+            }
+          }
+        },
+        {
+          "name": "Health Ready",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/health/ready",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "ready"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Sync",
+      "item": [
+        {
+          "name": "Run Sync",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/sync/run",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "sync", "run"]
+            }
+          }
+        },
+        {
+          "name": "Reprocess Snapshot",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{accessToken}}", "type": "string" }
+              ]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/sync/reprocess/{{snapshotId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "sync", "reprocess", "{{snapshotId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

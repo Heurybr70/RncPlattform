@@ -44,6 +44,50 @@ namespace RncPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("DistributedLocks");
                 });
 
+            modelBuilder.Entity("RncPlatform.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastUsedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReplacedByTokenHash")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RevokedReason")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "ExpiresAt");
+
+                    b.ToTable("RefreshTokens", (string)null);
+                });
+
             modelBuilder.Entity("RncPlatform.Domain.Entities.RncChangeLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -77,6 +121,8 @@ namespace RncPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("SnapshotId");
 
+                    b.HasIndex("Rnc", "DetectedAt");
+
                     b.ToTable("RncChangeLogs");
                 });
 
@@ -85,6 +131,10 @@ namespace RncPlatform.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ArchivedFilePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime2");
@@ -107,6 +157,9 @@ namespace RncPlatform.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("RecordCount")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("ReprocessedFromSnapshotId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("SourceFileName")
                         .HasMaxLength(200)
@@ -133,6 +186,12 @@ namespace RncPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FileHash");
+
+                    b.HasIndex("ReprocessedFromSnapshotId");
+
+                    b.HasIndex("Status", "StartedAt");
 
                     b.ToTable("RncSnapshots");
                 });
@@ -291,10 +350,15 @@ namespace RncPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("IsActiveInLatestSnapshot");
 
-                    b.HasIndex("NombreORazonSocial");
-
                     b.HasIndex("Rnc")
                         .IsUnique();
+
+                    b.HasIndex("NombreComercial", "Rnc")
+                        .HasDatabaseName("IX_Taxpayers_CommercialName_Rnc")
+                        .HasFilter("[NombreComercial] IS NOT NULL");
+
+                    b.HasIndex("NombreORazonSocial", "Rnc")
+                        .HasDatabaseName("IX_Taxpayers_Name_Rnc");
 
                     b.ToTable("Taxpayers");
                 });
@@ -312,6 +376,11 @@ namespace RncPlatform.Infrastructure.Persistence.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<int>("FailedLoginAttempts")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("FullName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -322,9 +391,25 @@ namespace RncPlatform.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("LastLoginAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("LockoutUntil")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Role")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("TokenVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -337,10 +422,23 @@ namespace RncPlatform.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasFilter("[Email] IS NOT NULL");
 
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("Role");
+
                     b.HasIndex("Username")
                         .IsUnique();
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("RncPlatform.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("RncPlatform.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

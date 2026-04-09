@@ -84,3 +84,6 @@ node_modules/
 .env
 .env.*
 !.env.example
+.vscode/
+src/RncPlatform.Api/run_output.txt
+src/RncPlatform.Api/data/

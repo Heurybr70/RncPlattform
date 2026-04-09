@@ -12,3 +12,9 @@ public interface IJwtProvider
 {
     string GenerateToken(User user);
 }
+
+public interface IRefreshTokenService
+{
+    string GenerateToken();
+    string HashToken(string token);
+}

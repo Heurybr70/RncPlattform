@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using RncPlatform.Application.Abstractions.Caching;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using RncPlatform.Application.Abstractions.ExternalServices;
 using RncPlatform.Application.Abstractions.Locking;
 using RncPlatform.Application.Abstractions.Persistence;
@@ -16,14 +19,18 @@ namespace RncPlatform.Application.Features.Sync.Services;
 
 public class RncSyncService : IRncSyncService
 {
+    private const string TaxpayerCacheNamespace = "taxpayer";
+    private const string TaxpayerSearchCacheNamespace = "taxpayer-search";
     private readonly IRncSnapshotRepository _snapshotRepo;
     private readonly IRncStagingRepository _stagingRepo;
     private readonly ITaxpayerRepository _taxpayerRepo;
     private readonly ISyncJobStateRepository _jobStateRepo;
+    private readonly IRncCacheService _cacheService;
     private readonly IRncSourceDownloader _downloader;
     private readonly IRncFileParser _parser;
     private readonly IDistributedLockService _lockService;
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly SyncArchiveOptions _archiveOptions;
     private readonly ILogger<RncSyncService> _logger;
 
     public RncSyncService(
@@ -31,20 +38,24 @@ public class RncSyncService : IRncSyncService
         IRncStagingRepository stagingRepo,
         ITaxpayerRepository taxpayerRepo,
         ISyncJobStateRepository jobStateRepo,
+        IRncCacheService cacheService,
         IRncSourceDownloader downloader,
         IRncFileParser parser,
         IDistributedLockService lockService,
         IServiceScopeFactory scopeFactory,
+        IOptions<SyncArchiveOptions> archiveOptions,
         ILogger<RncSyncService> logger)
     {
         _snapshotRepo = snapshotRepo;
         _stagingRepo = stagingRepo;
         _taxpayerRepo = taxpayerRepo;
         _jobStateRepo = jobStateRepo;
+        _cacheService = cacheService;
         _downloader = downloader;
         _parser = parser;
         _lockService = lockService;
         _scopeFactory = scopeFactory;
+        _archiveOptions = archiveOptions.Value;
         _logger = logger;
     }
 
@@ -78,51 +89,11 @@ public class RncSyncService : IRncSyncService
             var fileHash = await _downloader.GetLastFileHashAsync(cancellationToken);
 
             snapshot.SourceName = sourceName;
-            snapshot.SourceFileName = filePath;
+            snapshot.SourceFileName = Path.GetFileName(filePath);
             snapshot.FileHash = fileHash;
+            snapshot.ArchivedFilePath = await ArchiveSourceFileAsync(filePath, sourceName, fileHash, cancellationToken);
 
-            var lastSuccess = await _snapshotRepo.GetLatestSuccessfulAsync(cancellationToken);
-            if (lastSuccess != null && lastSuccess.FileHash == fileHash)
-            {
-                snapshot.Status = SnapshotStatus.NoChanges;
-                snapshot.CompletedAt = DateTime.UtcNow;
-                await _snapshotRepo.UpdateAsync(snapshot, cancellationToken);
-                await UpdateJobState(snapshot);
-                return new SyncResultDto { SnapshotId = snapshot.Id, Status = "NoChanges" };
-            }
-
-            // Staging insertion (batch processing simplificado)
-            var batch = new List<RncStaging>();
-            await foreach (var item in _parser.ParseFileAsync(filePath, snapshot.Id, cancellationToken))
-            {
-                batch.Add(item);
-                if (batch.Count >= 10000)
-                {
-                    await _stagingRepo.AddBatchAsync(batch, cancellationToken);
-                    snapshot.RecordCount += batch.Count;
-                    batch.Clear();
-                }
-            }
-            if (batch.Any())
-            {
-                await _stagingRepo.AddBatchAsync(batch, cancellationToken);
-                snapshot.RecordCount += batch.Count;
-            }
-
-            // Comparación y Upsert usando el Bulk MERGE
-            var affectedRows = await _stagingRepo.MergeStagingToTaxpayersAsync(snapshot.Id, cancellationToken);
-            
-            snapshot.Status = SnapshotStatus.Success;
-            snapshot.CompletedAt = DateTime.UtcNow;
-            snapshot.InsertedCount = affectedRows;
-            
-            await _snapshotRepo.UpdateAsync(snapshot, cancellationToken);
-            
-            // Cleanup Staging
-            await _stagingRepo.ClearBatchAsync(snapshot.Id, cancellationToken);
-            await UpdateJobState(snapshot);
-
-            return new SyncResultDto { SnapshotId = snapshot.Id, Status = "Success", InsertedCount = snapshot.InsertedCount };
+            return await ProcessSnapshotFileAsync(snapshot, filePath, allowNoChangesShortCircuit: true, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -133,6 +104,78 @@ public class RncSyncService : IRncSyncService
             
             await UpdateSnapshotStatusInNewScope(snapshot, cancellationToken);
             await UpdateJobState(snapshot);
+            throw;
+        }
+        finally
+        {
+            await _lockService.ReleaseLockAsync(lockResource, lockedBy, cancellationToken);
+        }
+    }
+
+    public async Task<SyncResultDto> ReprocessSnapshotAsync(Guid snapshotId, CancellationToken cancellationToken = default)
+    {
+        const string lockResource = "RncPlatform.Sync";
+        var lockedBy = Guid.NewGuid().ToString();
+
+        if (!await _lockService.AcquireLockAsync(lockResource, lockedBy, TimeSpan.FromHours(2), cancellationToken))
+        {
+            _logger.LogWarning("Reproceso abandonado porque ya hay un proceso en ejecución.");
+            return new SyncResultDto { Status = "Skipped - Already Running" };
+        }
+
+        RncSnapshot? snapshot = null;
+
+        try
+        {
+            var sourceSnapshot = await _snapshotRepo.GetByIdAsync(snapshotId, cancellationToken);
+            if (sourceSnapshot == null)
+            {
+                return new SyncResultDto
+                {
+                    SnapshotId = snapshotId,
+                    Status = "SnapshotNotFound",
+                    ErrorMessage = "No se encontró el snapshot solicitado."
+                };
+            }
+
+            if (string.IsNullOrWhiteSpace(sourceSnapshot.ArchivedFilePath) || !File.Exists(sourceSnapshot.ArchivedFilePath))
+            {
+                return new SyncResultDto
+                {
+                    SnapshotId = snapshotId,
+                    Status = "SnapshotArchiveMissing",
+                    ErrorMessage = "El archivo archivado del snapshot no está disponible para reproceso."
+                };
+            }
+
+            snapshot = new RncSnapshot
+            {
+                Id = Guid.NewGuid(),
+                ReprocessedFromSnapshotId = sourceSnapshot.Id,
+                Status = SnapshotStatus.Running,
+                SourceName = sourceSnapshot.SourceName,
+                SourceUrl = sourceSnapshot.SourceUrl,
+                SourceFileName = sourceSnapshot.SourceFileName,
+                FileHash = sourceSnapshot.FileHash,
+                ArchivedFilePath = sourceSnapshot.ArchivedFilePath
+            };
+
+            await _snapshotRepo.AddAsync(snapshot, cancellationToken);
+            return await ProcessSnapshotFileAsync(snapshot, sourceSnapshot.ArchivedFilePath, allowNoChangesShortCircuit: false, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error crítico durante el reproceso del snapshot {SnapshotId}", snapshotId);
+
+            if (snapshot != null)
+            {
+                snapshot.Status = SnapshotStatus.Failed;
+                snapshot.ErrorMessage = ex.Message;
+                snapshot.CompletedAt = DateTime.UtcNow;
+                await UpdateSnapshotStatusInNewScope(snapshot, cancellationToken);
+                await UpdateJobState(snapshot);
+            }
+
             throw;
         }
         finally
@@ -187,8 +230,120 @@ public class RncSyncService : IRncSyncService
         };
     }
 
-    public Task<SyncResultDto> ReprocessSnapshotAsync(Guid snapshotId, CancellationToken cancellationToken = default)
+    private async Task<SyncResultDto> ProcessSnapshotFileAsync(
+        RncSnapshot snapshot,
+        string filePath,
+        bool allowNoChangesShortCircuit,
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("El reproceso manual se implementará en la siguiente fase de desarrollo.");
+        try
+        {
+            if (allowNoChangesShortCircuit)
+            {
+                var lastSuccess = await _snapshotRepo.GetLatestSuccessfulAsync(cancellationToken);
+                if (lastSuccess != null && lastSuccess.Id != snapshot.Id && lastSuccess.FileHash == snapshot.FileHash)
+                {
+                    snapshot.Status = SnapshotStatus.NoChanges;
+                    snapshot.CompletedAt = DateTime.UtcNow;
+                    await _snapshotRepo.UpdateAsync(snapshot, cancellationToken);
+                    await UpdateJobState(snapshot);
+                    return new SyncResultDto { SnapshotId = snapshot.Id, Status = "NoChanges" };
+                }
+            }
+
+            snapshot.RecordCount = 0;
+
+            var batch = new List<RncStaging>();
+            await foreach (var item in _parser.ParseFileAsync(filePath, snapshot.Id, cancellationToken))
+            {
+                batch.Add(item);
+                if (batch.Count >= 10000)
+                {
+                    await _stagingRepo.AddBatchAsync(batch, cancellationToken);
+                    snapshot.RecordCount += batch.Count;
+                    batch.Clear();
+                }
+            }
+
+            if (batch.Any())
+            {
+                await _stagingRepo.AddBatchAsync(batch, cancellationToken);
+                snapshot.RecordCount += batch.Count;
+            }
+
+            var mergeResult = await _stagingRepo.MergeStagingToTaxpayersAsync(snapshot.Id, cancellationToken);
+
+            snapshot.Status = SnapshotStatus.Success;
+            snapshot.CompletedAt = DateTime.UtcNow;
+            snapshot.InsertedCount = mergeResult.InsertedCount;
+            snapshot.UpdatedCount = mergeResult.UpdatedCount;
+            snapshot.DeactivatedCount = mergeResult.DeactivatedCount;
+
+            await _snapshotRepo.UpdateAsync(snapshot, cancellationToken);
+            await _cacheService.InvalidateNamespaceAsync(TaxpayerCacheNamespace, cancellationToken);
+            await _cacheService.InvalidateNamespaceAsync(TaxpayerSearchCacheNamespace, cancellationToken);
+            await UpdateJobState(snapshot);
+
+            return new SyncResultDto
+            {
+                SnapshotId = snapshot.Id,
+                Status = snapshot.ReprocessedFromSnapshotId.HasValue ? "Reprocessed" : "Success",
+                InsertedCount = snapshot.InsertedCount,
+                UpdatedCount = snapshot.UpdatedCount,
+                DeactivatedCount = snapshot.DeactivatedCount
+            };
+        }
+        finally
+        {
+            await _stagingRepo.ClearBatchAsync(snapshot.Id, cancellationToken);
+        }
+    }
+
+    private async Task<string> ArchiveSourceFileAsync(string sourceFilePath, string sourceName, string fileHash, CancellationToken cancellationToken)
+    {
+        var archiveRoot = ResolveArchiveRootPath();
+        var sourceFolder = SanitizePathSegment(string.IsNullOrWhiteSpace(sourceName) ? "dgii" : sourceName);
+        var fileExtension = Path.GetExtension(sourceFilePath);
+        if (string.IsNullOrWhiteSpace(fileExtension))
+        {
+            fileExtension = ".txt";
+        }
+
+        var archiveDirectory = Path.Combine(archiveRoot, sourceFolder);
+        Directory.CreateDirectory(archiveDirectory);
+
+        var archivedFilePath = Path.Combine(archiveDirectory, $"{fileHash}{fileExtension}");
+        if (File.Exists(archivedFilePath))
+        {
+            return archivedFilePath;
+        }
+
+        await using var sourceStream = new FileStream(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
+        await using var targetStream = new FileStream(archivedFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, useAsync: true);
+        await sourceStream.CopyToAsync(targetStream, cancellationToken);
+
+        return archivedFilePath;
+    }
+
+    private string ResolveArchiveRootPath()
+    {
+        if (!string.IsNullOrWhiteSpace(_archiveOptions.RootPath))
+        {
+            return Path.GetFullPath(_archiveOptions.RootPath);
+        }
+
+        return Path.Combine(AppContext.BaseDirectory, "data", "rnc-archive");
+    }
+
+    private static string SanitizePathSegment(string value)
+    {
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var sanitized = new string(value
+            .Where(ch => !invalidChars.Contains(ch))
+            .Select(ch => char.IsWhiteSpace(ch) ? '-' : ch)
+            .ToArray())
+            .Trim('-');
+
+        return string.IsNullOrWhiteSpace(sanitized) ? "dgii" : sanitized;
     }
 }

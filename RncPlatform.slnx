@@ -6,4 +6,8 @@
     <Project Path="src/RncPlatform.Domain/RncPlatform.Domain.csproj" />
     <Project Path="src/RncPlatform.Infrastructure/RncPlatform.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/RncPlatform.Api.Tests/RncPlatform.Api.Tests.csproj" />
+    <Project Path="tests/RncPlatform.Application.Tests/RncPlatform.Application.Tests.csproj" />
+  </Folder>
 </Solution>

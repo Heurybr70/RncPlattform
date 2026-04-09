@@ -19,6 +19,11 @@ public class RncSnapshotRepository : IRncSnapshotRepository
         _dbContext = dbContext;
     }
 
+    public async Task<RncSnapshot?> GetByIdAsync(Guid snapshotId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.RncSnapshots.FirstOrDefaultAsync(x => x.Id == snapshotId, cancellationToken);
+    }
+
     public async Task<RncSnapshot?> GetLatestSuccessfulAsync(CancellationToken cancellationToken = default)
     {
         return await _dbContext.RncSnapshots

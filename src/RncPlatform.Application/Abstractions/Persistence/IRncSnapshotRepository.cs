@@ -8,6 +8,7 @@ namespace RncPlatform.Application.Abstractions.Persistence;
 
 public interface IRncSnapshotRepository
 {
+    Task<RncSnapshot?> GetByIdAsync(Guid snapshotId, CancellationToken cancellationToken = default);
     Task<RncSnapshot?> GetLatestSuccessfulAsync(CancellationToken cancellationToken = default);
     Task AddAsync(RncSnapshot snapshot, CancellationToken cancellationToken = default);
     Task UpdateAsync(RncSnapshot snapshot, CancellationToken cancellationToken = default);

@@ -12,6 +12,7 @@ using RncPlatform.Infrastructure.Locking;
 using RncPlatform.Infrastructure.Persistence;
 using RncPlatform.Infrastructure.Persistence.Repositories;
 using RncPlatform.Application.Abstractions.Identity;
+using RncPlatform.Application.Features.Sync.Services;
 using RncPlatform.Infrastructure.Identity;
 
 namespace RncPlatform.Infrastructure;
@@ -20,6 +21,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<SyncArchiveOptions>(configuration.GetSection("SyncArchive"));
+
         services.AddDbContext<RncDbContext>(options =>
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection"),
@@ -47,6 +50,7 @@ public static class DependencyInjection
         services.AddScoped<ISyncJobStateRepository, SyncJobStateRepository>();
         services.AddScoped<IRncStagingRepository, RncStagingRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         // Services
         services.AddScoped<IRncCacheService, RncCacheService>();
@@ -54,6 +58,7 @@ public static class DependencyInjection
         services.AddScoped<IRncFileParser, RncFileParser>();
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<IJwtProvider, JwtProvider>();
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         
         services.AddHttpClient<IRncSourceDownloader, DgiiRncDownloader>();
 

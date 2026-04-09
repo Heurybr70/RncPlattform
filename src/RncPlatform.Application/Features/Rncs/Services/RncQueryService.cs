@@ -12,6 +12,8 @@ namespace RncPlatform.Application.Features.Rncs.Services;
 
 public class RncQueryService : IRncQueryService
 {
+    private const string TaxpayerCacheNamespace = "taxpayer";
+    private const string TaxpayerSearchCacheNamespace = "taxpayer-search";
     private readonly ITaxpayerRepository _repository;
     private readonly IRncChangeLogRepository _changeLogRepository;
     private readonly IRncCacheService _cache;
@@ -27,7 +29,8 @@ public class RncQueryService : IRncQueryService
 
     public async Task<TaxpayerDto?> GetByRncAsync(string rnc, CancellationToken cancellationToken = default)
     {
-        var cacheKey = $"rnc:{rnc}";
+        var namespaceVersion = await _cache.GetNamespaceVersionAsync(TaxpayerCacheNamespace, cancellationToken);
+        var cacheKey = $"{TaxpayerCacheNamespace}:{namespaceVersion}:rnc:{rnc}";
         var cached = await _cache.GetAsync<TaxpayerDto>(cacheKey, cancellationToken);
         if (cached != null) return cached;
 
@@ -53,9 +56,23 @@ public class RncQueryService : IRncQueryService
         return dto;
     }
 
-    public async Task<PagedResponse<TaxpayerSearchItemDto>> SearchAsync(string term, int page, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<PagedResponse<TaxpayerSearchItemDto>> SearchAsync(string term, int page, int pageSize, string? cursor = null, CancellationToken cancellationToken = default)
     {
-        var (items, total) = await _repository.SearchAsync(term, page, pageSize, cancellationToken);
+        term = term.Trim();
+        var isCursorMode = cursor != null;
+        cursor = string.IsNullOrWhiteSpace(cursor) ? null : cursor.Trim();
+        var repositoryCursor = isCursorMode ? cursor ?? string.Empty : null;
+        var namespaceVersion = await _cache.GetNamespaceVersionAsync(TaxpayerSearchCacheNamespace, cancellationToken);
+        var normalizedTerm = term.ToUpperInvariant();
+        var cursorKey = isCursorMode ? cursor ?? "start" : "page-mode";
+        var cacheKey = $"{TaxpayerSearchCacheNamespace}:{namespaceVersion}:term:{normalizedTerm}:page:{page}:size:{pageSize}:cursor:{cursorKey}";
+        var cached = await _cache.GetAsync<PagedResponse<TaxpayerSearchItemDto>>(cacheKey, cancellationToken);
+        if (cached != null)
+        {
+            return cached;
+        }
+
+        var (items, total, nextCursor) = await _repository.SearchAsync(term, page, pageSize, repositoryCursor, cancellationToken);
 
         var dtoItems = items.Select(x => new TaxpayerSearchItemDto
         {
@@ -66,13 +83,17 @@ public class RncQueryService : IRncQueryService
             IsActive = x.IsActiveInLatestSnapshot
         });
 
-        return new PagedResponse<TaxpayerSearchItemDto>
+        var response = new PagedResponse<TaxpayerSearchItemDto>
         {
             Items = dtoItems,
             TotalCount = total,
-            Page = page,
-            PageSize = pageSize
+            Page = isCursorMode ? 1 : page,
+            PageSize = pageSize,
+            NextCursor = nextCursor
         };
+
+        await _cache.SetAsync(cacheKey, response, TimeSpan.FromMinutes(5), cancellationToken);
+        return response;
     }
 
     public async Task<IEnumerable<TaxpayerChangeDto>> GetChangesByRncAsync(string rnc, CancellationToken cancellationToken = default)

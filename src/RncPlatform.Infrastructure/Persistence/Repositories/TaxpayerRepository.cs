@@ -25,25 +25,74 @@ public class TaxpayerRepository : ITaxpayerRepository
             .FirstOrDefaultAsync(x => x.Rnc == rnc, cancellationToken);
     }
 
-    public async Task<(IEnumerable<Taxpayer> Items, int TotalCount)> SearchAsync(string term, int page, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<Taxpayer> Items, int TotalCount, string? NextCursor)> SearchAsync(string term, int page, int pageSize, string? cursor = null, CancellationToken cancellationToken = default)
     {
-        var query = _dbContext.Taxpayers.AsNoTracking();
-        
-        if (!string.IsNullOrWhiteSpace(term))
+        term = term.Trim();
+        var isCursorMode = cursor != null;
+        cursor = string.IsNullOrWhiteSpace(cursor) ? null : cursor.Trim();
+
+        var filteredQuery = _dbContext.Taxpayers.AsNoTracking();
+
+        if (TryNormalizeExactRnc(term, out var normalizedRnc))
         {
-            // Busca por nombre (ignorando mayúsculas/minúsculas debido al default collation usual de SQL Server) o por RNC exacto
-            query = query.Where(x => EF.Functions.Like(x.NombreORazonSocial, $"%{term}%") || x.Rnc == term);
+            filteredQuery = filteredQuery.Where(x => x.Rnc == normalizedRnc);
+        }
+        else if (!string.IsNullOrWhiteSpace(term))
+        {
+            var likePattern = $"{EscapeSqlLikePattern(term)}%";
+            filteredQuery = filteredQuery.Where(x =>
+                EF.Functions.Like(x.NombreORazonSocial, likePattern) ||
+                (x.NombreComercial != null && EF.Functions.Like(x.NombreComercial, likePattern)));
         }
 
-        var totalCount = await query.CountAsync(cancellationToken);
-        
-        var items = await query
+        var totalCount = await filteredQuery.CountAsync(cancellationToken);
+
+        if (isCursorMode && !TryNormalizeExactRnc(term, out _))
+        {
+            var cursorQuery = filteredQuery;
+
+            if (cursor != null)
+            {
+                cursorQuery = cursorQuery.Where(x => x.Rnc.CompareTo(cursor) > 0);
+            }
+
+            var cursorItems = await cursorQuery
+                .OrderBy(x => x.Rnc)
+                .Take(pageSize + 1)
+                .ToListAsync(cancellationToken);
+
+            var hasMore = cursorItems.Count > pageSize;
+            var pageItems = hasMore
+                ? cursorItems.Take(pageSize).ToList()
+                : cursorItems;
+
+            return (pageItems, totalCount, hasMore ? pageItems[^1].Rnc : null);
+        }
+
+        var items = await filteredQuery
             .OrderBy(x => x.NombreORazonSocial)
+            .ThenBy(x => x.Rnc)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-        return (items, totalCount);
+        return (items, totalCount, null);
+    }
+
+    private static bool TryNormalizeExactRnc(string term, out string normalizedRnc)
+    {
+        normalizedRnc = new string(term.Where(char.IsDigit).ToArray());
+
+        return normalizedRnc.Length is >= 9 and <= 20
+            && term.All(ch => char.IsDigit(ch) || ch == '-' || char.IsWhiteSpace(ch));
+    }
+
+    private static string EscapeSqlLikePattern(string value)
+    {
+        return value
+            .Replace("[", "[[]")
+            .Replace("%", "[%]")
+            .Replace("_", "[_]");
     }
 
     public async Task UpsertBatchAsync(IEnumerable<Taxpayer> taxpayers, CancellationToken cancellationToken = default)

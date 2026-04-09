@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ public class DgiiRncDownloader : IRncSourceDownloader
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     private readonly ILogger<DgiiRncDownloader> _logger;
+    private string? _lastDownloadedFilePath;
 
     public DgiiRncDownloader(HttpClient httpClient, IConfiguration configuration, ILogger<DgiiRncDownloader> logger)
     {
@@ -95,13 +97,19 @@ public class DgiiRncDownloader : IRncSourceDownloader
         }
 
         _logger.LogInformation("Archivo TXT extraído exitosamente en {TempTxtPath}", tempTxtPath);
+        _lastDownloadedFilePath = tempTxtPath;
         return (tempTxtPath, sourceName);
     }
 
-    public Task<string> GetLastFileHashAsync(CancellationToken cancellationToken = default)
+    public async Task<string> GetLastFileHashAsync(CancellationToken cancellationToken = default)
     {
-        // En un mundo ideal haríamos un HEAD request a la web de DGII o checaríamos ETag.
-        // Simularemos con GUID por ahora o dejaremos que se calcule por archivo.
-        return Task.FromResult(Guid.NewGuid().ToString());
+        if (string.IsNullOrWhiteSpace(_lastDownloadedFilePath) || !File.Exists(_lastDownloadedFilePath))
+        {
+            throw new InvalidOperationException("No existe un archivo descargado disponible para calcular su hash.");
+        }
+
+        await using var stream = File.OpenRead(_lastDownloadedFilePath);
+        var hash = await SHA256.HashDataAsync(stream, cancellationToken);
+        return Convert.ToHexString(hash);
     }
 }
