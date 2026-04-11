@@ -21,6 +21,8 @@ public class RncSyncService : IRncSyncService
 {
     private const string TaxpayerCacheNamespace = "taxpayer";
     private const string TaxpayerSearchCacheNamespace = "taxpayer-search";
+    private const string TaxpayerChangeLogCacheNamespace = "taxpayer-change-log";
+    private const string SyncStatusCacheNamespace = "sync-status";
     private readonly IRncSnapshotRepository _snapshotRepo;
     private readonly IRncStagingRepository _stagingRepo;
     private readonly ITaxpayerRepository _taxpayerRepo;
@@ -213,21 +215,33 @@ public class RncSyncService : IRncSyncService
             jobState.LastFailureAt = snapshot.CompletedAt;
 
         await _jobStateRepo.UpsertStateAsync(jobState, CancellationToken.None);
+        await _cacheService.InvalidateNamespaceAsync(SyncStatusCacheNamespace, CancellationToken.None);
     }
 
     public async Task<SyncStatusDto> GetSystemStatusAsync(CancellationToken cancellationToken = default)
     {
-        var state = await _jobStateRepo.GetStateAsync("DailySync", cancellationToken);
-        if (state == null) return new SyncStatusDto { LastStatus = "Never Run" };
-
-        return new SyncStatusDto
+        var namespaceVersion = await _cacheService.GetNamespaceVersionAsync(SyncStatusCacheNamespace, cancellationToken);
+        var cacheKey = $"{SyncStatusCacheNamespace}:{namespaceVersion}:job:daily-sync";
+        var cached = await _cacheService.GetAsync<SyncStatusDto>(cacheKey, cancellationToken);
+        if (cached != null)
         {
-            LastRunAt = state.LastRunAt,
-            LastSuccessAt = state.LastSuccessAt,
-            LastFailureAt = state.LastFailureAt,
-            LastStatus = state.LastStatus,
-            LastMessage = state.LastMessage
-        };
+            return cached;
+        }
+
+        var state = await _jobStateRepo.GetStateAsync("DailySync", cancellationToken);
+        var response = state == null
+            ? new SyncStatusDto { LastStatus = "Never Run" }
+            : new SyncStatusDto
+            {
+                LastRunAt = state.LastRunAt,
+                LastSuccessAt = state.LastSuccessAt,
+                LastFailureAt = state.LastFailureAt,
+                LastStatus = state.LastStatus,
+                LastMessage = state.LastMessage
+            };
+
+        await _cacheService.SetAsync(cacheKey, response, TimeSpan.FromMinutes(5), cancellationToken);
+        return response;
     }
 
     private async Task<SyncResultDto> ProcessSnapshotFileAsync(
@@ -282,6 +296,7 @@ public class RncSyncService : IRncSyncService
             await _snapshotRepo.UpdateAsync(snapshot, cancellationToken);
             await _cacheService.InvalidateNamespaceAsync(TaxpayerCacheNamespace, cancellationToken);
             await _cacheService.InvalidateNamespaceAsync(TaxpayerSearchCacheNamespace, cancellationToken);
+            await _cacheService.InvalidateNamespaceAsync(TaxpayerChangeLogCacheNamespace, cancellationToken);
             await UpdateJobState(snapshot);
 
             return new SyncResultDto

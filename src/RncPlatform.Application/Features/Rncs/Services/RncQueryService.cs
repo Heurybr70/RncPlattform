@@ -14,6 +14,7 @@ public class RncQueryService : IRncQueryService
 {
     private const string TaxpayerCacheNamespace = "taxpayer";
     private const string TaxpayerSearchCacheNamespace = "taxpayer-search";
+    private const string TaxpayerChangeLogCacheNamespace = "taxpayer-change-log";
     private readonly ITaxpayerRepository _repository;
     private readonly IRncChangeLogRepository _changeLogRepository;
     private readonly IRncCacheService _cache;
@@ -98,8 +99,17 @@ public class RncQueryService : IRncQueryService
 
     public async Task<IEnumerable<TaxpayerChangeDto>> GetChangesByRncAsync(string rnc, CancellationToken cancellationToken = default)
     {
+        var normalizedRnc = rnc.Trim().ToUpperInvariant();
+        var namespaceVersion = await _cache.GetNamespaceVersionAsync(TaxpayerChangeLogCacheNamespace, cancellationToken);
+        var cacheKey = $"{TaxpayerChangeLogCacheNamespace}:{namespaceVersion}:rnc:{normalizedRnc}";
+        var cached = await _cache.GetAsync<List<TaxpayerChangeDto>>(cacheKey, cancellationToken);
+        if (cached != null)
+        {
+            return cached;
+        }
+
         var changes = await _changeLogRepository.GetByRncAsync(rnc, cancellationToken);
-        return changes.Select(x => new TaxpayerChangeDto
+        var response = changes.Select(x => new TaxpayerChangeDto
         {
             ChangeId = x.Id,
             SnapshotId = x.SnapshotId,
@@ -107,6 +117,9 @@ public class RncQueryService : IRncQueryService
             DetectedAt = x.DetectedAt,
             OldValuesJson = x.OldValuesJson,
             NewValuesJson = x.NewValuesJson
-        });
+        }).ToList();
+
+        await _cache.SetAsync(cacheKey, response, TimeSpan.FromHours(12), cancellationToken);
+        return response;
     }
 }

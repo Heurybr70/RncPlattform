@@ -49,13 +49,14 @@ dotnet run --project src/RncPlatform.Api/RncPlatform.Api.csproj --launch-profile
    - `https://localhost:7207`
    - `http://localhost:5092`
 
-Swagger solo se expone en `Development`.
+Swagger se expone en `Development` y tambien puede habilitarse en otros ambientes con `Swagger__Enabled=true`.
 
 ## Documentacion disponible
 
 - [Quickstart comercial para clientes](docs/CLIENT_QUICKSTART.md)
 - [Guia para clientes](docs/CLIENT_API.md)
 - [Guia tecnica general](docs/API_TECHNICAL_GUIDE.md)
+- [Guia de superusuario](docs/SUPERUSER_GUIDE.md)
 - [Roles y control de acceso](docs/ROLES_AND_ACCESS.md)
 - [Coleccion Postman](docs/postman/RncPlatform.postman_collection.json)
 - [Notas de despliegue](DEPLOYMENT.md)

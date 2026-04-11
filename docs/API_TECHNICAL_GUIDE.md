@@ -26,7 +26,7 @@ Responsabilidades:
 - rate limiting,
 - CORS,
 - health checks,
-- swagger en desarrollo,
+- swagger en desarrollo y opcionalmente en otros ambientes,
 - controllers HTTP.
 
 ### `RncPlatform.Application`
@@ -78,7 +78,7 @@ El host aplica, en orden funcional, los siguientes componentes relevantes:
 7. `Authorization` por roles/politicas.
 8. `MapControllers` y `MapHealthChecks`.
 
-En `Development` tambien se publica Swagger UI.
+En `Development` se publica Swagger UI por defecto. En otros ambientes tambien puede exponerse cuando `Swagger:Enabled=true`.
 
 ## Autenticacion y sesiones
 
@@ -114,6 +114,7 @@ Politicas configuradas:
 - `CanRunSync`: `Admin` y `SyncOperator`.
 
 Consulte [Roles y control de acceso](ROLES_AND_ACCESS.md) para la matriz completa.
+Si necesita la vista operativa completa del perfil `Admin`, consulte [SUPERUSER_GUIDE.md](SUPERUSER_GUIDE.md).
 
 ## Busqueda de RNC
 

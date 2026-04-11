@@ -2,6 +2,8 @@
 
 Este documento deja constancia de los roles del sistema, las politicas que los usan y el alcance operativo de cada uno.
 
+Si necesita una guia operativa completa para el rol `Admin`, consulte [SUPERUSER_GUIDE.md](SUPERUSER_GUIDE.md).
+
 ## Roles disponibles
 
 ### `User`

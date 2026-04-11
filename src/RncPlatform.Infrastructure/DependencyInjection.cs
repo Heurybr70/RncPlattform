@@ -14,6 +14,7 @@ using RncPlatform.Infrastructure.Persistence.Repositories;
 using RncPlatform.Application.Abstractions.Identity;
 using RncPlatform.Application.Features.Sync.Services;
 using RncPlatform.Infrastructure.Identity;
+using StackExchange.Redis;
 
 namespace RncPlatform.Infrastructure;
 
@@ -44,7 +45,7 @@ public static class DependencyInjection
         {
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = redisConnectionString;
+                options.Configuration = NormalizeValkeyConnectionString(redisConnectionString);
                 options.InstanceName = "RncPlatform_";
             });
         }
@@ -72,5 +73,71 @@ public static class DependencyInjection
         services.AddHostedService<RncSyncWorker>();
 
         return services;
+    }
+
+    private static string NormalizeValkeyConnectionString(string connectionString)
+    {
+        if (!Uri.TryCreate(connectionString, UriKind.Absolute, out var uri) ||
+            (!string.Equals(uri.Scheme, "redis", StringComparison.OrdinalIgnoreCase) &&
+             !string.Equals(uri.Scheme, "rediss", StringComparison.OrdinalIgnoreCase)))
+        {
+            return connectionString;
+        }
+
+        var options = new ConfigurationOptions
+        {
+            Ssl = string.Equals(uri.Scheme, "rediss", StringComparison.OrdinalIgnoreCase)
+        };
+
+        options.EndPoints.Add(uri.Host, uri.Port > 0 ? uri.Port : 6379);
+
+        if (options.Ssl)
+        {
+            options.SslHost = uri.Host;
+        }
+
+        var (user, password) = ParseUserInfo(uri.UserInfo);
+        if (!string.IsNullOrWhiteSpace(user))
+        {
+            options.User = user;
+        }
+
+        if (!string.IsNullOrWhiteSpace(password))
+        {
+            options.Password = password;
+        }
+
+        if (TryParseDefaultDatabase(uri.AbsolutePath, out var defaultDatabase))
+        {
+            options.DefaultDatabase = defaultDatabase;
+        }
+
+        return options.ToString();
+    }
+
+    private static (string? User, string? Password) ParseUserInfo(string userInfo)
+    {
+        if (string.IsNullOrWhiteSpace(userInfo))
+        {
+            return (null, null);
+        }
+
+        var separatorIndex = userInfo.IndexOf(':');
+        if (separatorIndex < 0)
+        {
+            return (Uri.UnescapeDataString(userInfo), null);
+        }
+
+        var user = userInfo[..separatorIndex];
+        var password = userInfo[(separatorIndex + 1)..];
+        return (
+            string.IsNullOrWhiteSpace(user) ? null : Uri.UnescapeDataString(user),
+            string.IsNullOrWhiteSpace(password) ? null : Uri.UnescapeDataString(password));
+    }
+
+    private static bool TryParseDefaultDatabase(string absolutePath, out int database)
+    {
+        var trimmedPath = absolutePath.Trim('/');
+        return int.TryParse(trimmedPath, out database);
     }
 }
